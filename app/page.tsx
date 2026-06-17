@@ -74,7 +74,8 @@ export default function Home() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchAll(pos.coords.latitude, pos.coords.longitude),
-        () => fetchAll(40.7128, -74.006)
+        () => fetchAll(40.7128, -74.006),
+        { timeout: 5000 }
       );
     } else {
       fetchAll(40.7128, -74.006);

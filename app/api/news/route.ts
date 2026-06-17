@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const rssUrl = "https://feeds.bbci.co.uk/news/rss.xml";
-  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&api_key=public&count=3`;
+  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
   const res = await fetch(apiUrl, { next: { revalidate: 900 } });
   const data = await res.json();
