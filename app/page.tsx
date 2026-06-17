@@ -69,7 +69,8 @@ export default function Home() {
         fetch(`/api/weather?lat=${lat}&lon=${lon}`).then((r) => r.json()),
         fetch("/api/news").then((r) => r.json()),
       ]).then(([w, n]) => {
-        setWeather(w);
+        setWeather(w.tomorrow);
+        setWeek(w.week);
         setNews(n.articles || []);
         setLoading(false);
       });
