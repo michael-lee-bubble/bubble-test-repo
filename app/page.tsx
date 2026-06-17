@@ -96,7 +96,7 @@ export default function Home() {
   }, []);
 
   const sendNotification = async () => {
-    if (!email) return;
+    if (!emailIsValid) return;
     setNotifyStatus("sending");
     const res = await fetch("/api/notify", {
       method: "POST",
