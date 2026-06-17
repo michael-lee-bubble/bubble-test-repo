@@ -46,6 +46,8 @@ interface Weather {
   wind_speed: number;
 }
 
+type WeekDay = Weather;
+
 interface Article {
   title: string;
   link: string;
@@ -54,9 +56,11 @@ interface Article {
 
 export default function Home() {
   const [weather, setWeather] = useState<Weather | null>(null);
+  const [week, setWeek] = useState<WeekDay[]>([]);
   const [news, setNews] = useState<Article[]>([]);
   const [email, setEmail] = useState("");
   const [notifyStatus, setNotifyStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [weekNotifyStatus, setWeekNotifyStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -65,7 +69,8 @@ export default function Home() {
         fetch(`/api/weather?lat=${lat}&lon=${lon}`).then((r) => r.json()),
         fetch("/api/news").then((r) => r.json()),
       ]).then(([w, n]) => {
-        setWeather(w);
+        setWeather(w.tomorrow);
+        setWeek(w.week);
         setNews(n.articles || []);
         setLoading(false);
       });
@@ -91,6 +96,17 @@ export default function Home() {
       body: JSON.stringify({ email, weather }),
     });
     setNotifyStatus(res.ok ? "sent" : "error");
+  };
+
+  const sendWeekNotification = async () => {
+    if (!email || week.length === 0) return;
+    setWeekNotifyStatus("sending");
+    const res = await fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, forecast: week }),
+    });
+    setWeekNotifyStatus(res.ok ? "sent" : "error");
   };
 
   const wmo = weather ? (WMO_CODES[weather.weather_code] ?? { label: "Unknown", emoji: "🌡️" }) : null;
@@ -159,28 +175,41 @@ export default function Home() {
 
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">
-                Get tomorrow&apos;s weather by email
+                Get weather updates by email
               </p>
-              {notifyStatus === "sent" ? (
-                <p className="text-sm text-green-600">✓ Notification sent to {email}</p>
-              ) : (
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-gray-400 transition-colors"
-                  />
+              <div className="space-y-3">
+                {notifyStatus === "sent" ? (
+                  <p className="text-sm text-green-600">✓ Notification sent to {email}</p>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-gray-400 transition-colors"
+                    />
+                    <button
+                      onClick={sendNotification}
+                      disabled={notifyStatus === "sending" || !email}
+                      className="text-sm bg-gray-900 text-white rounded-lg px-4 py-2 hover:bg-gray-700 disabled:opacity-40 transition-colors cursor-pointer"
+                    >
+                      {notifyStatus === "sending" ? "Sending…" : "Notify me"}
+                    </button>
+                  </div>
+                )}
+                {weekNotifyStatus === "sent" ? (
+                  <p className="text-sm text-green-600">✓ Weekly forecast sent to {email}</p>
+                ) : (
                   <button
-                    onClick={sendNotification}
-                    disabled={notifyStatus === "sending" || !email}
-                    className="text-sm bg-gray-900 text-white rounded-lg px-4 py-2 hover:bg-gray-700 disabled:opacity-40 transition-colors cursor-pointer"
+                    onClick={sendWeekNotification}
+                    disabled={weekNotifyStatus === "sending" || !email || week.length === 0}
+                    className="w-full text-sm bg-white text-gray-700 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 disabled:opacity-40 transition-colors cursor-pointer"
                   >
-                    {notifyStatus === "sending" ? "Sending…" : "Notify me"}
+                    {weekNotifyStatus === "sending" ? "Sending…" : "Email me next week's forecast"}
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </>
         )}
