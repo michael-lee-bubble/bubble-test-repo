@@ -67,6 +67,9 @@ export default function Home() {
   const [notifyStatus, setNotifyStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [weekNotifyStatus, setWeekNotifyStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [loading, setLoading] = useState(true);
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  const emailIsValid = isValidEmail(email);
 
   useEffect(() => {
     const fetchAll = (lat: number, lon: number) => {
