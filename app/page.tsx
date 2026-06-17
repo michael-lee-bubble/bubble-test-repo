@@ -46,6 +46,8 @@ interface Weather {
   wind_speed: number;
 }
 
+type WeekDay = Weather;
+
 interface Article {
   title: string;
   link: string;
@@ -54,9 +56,11 @@ interface Article {
 
 export default function Home() {
   const [weather, setWeather] = useState<Weather | null>(null);
+  const [week, setWeek] = useState<WeekDay[]>([]);
   const [news, setNews] = useState<Article[]>([]);
   const [email, setEmail] = useState("");
   const [notifyStatus, setNotifyStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [weekNotifyStatus, setWeekNotifyStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
