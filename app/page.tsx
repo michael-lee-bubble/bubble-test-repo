@@ -23,6 +23,11 @@ const WMO_CODES: Record<number, { label: string; emoji: string }> = {
   95: { label: "Thunderstorm", emoji: "⛈️" },
 };
 
+function isValidEmail(value: string): boolean {
+  // simple, pragmatic check: non-empty local part, @, non-empty domain with a dot
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
 function getWearSuggestion(tempMax: number, code: number): string {
   const isRainy = [51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code);
   const isSnowy = [71, 73, 75, 85, 86].includes(code);
