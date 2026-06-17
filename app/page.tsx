@@ -175,28 +175,41 @@ export default function Home() {
 
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">
-                Get tomorrow&apos;s weather by email
+                Get weather updates by email
               </p>
-              {notifyStatus === "sent" ? (
-                <p className="text-sm text-green-600">✓ Notification sent to {email}</p>
-              ) : (
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-gray-400 transition-colors"
-                  />
+              <div className="space-y-3">
+                {notifyStatus === "sent" ? (
+                  <p className="text-sm text-green-600">✓ Notification sent to {email}</p>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-gray-400 transition-colors"
+                    />
+                    <button
+                      onClick={sendNotification}
+                      disabled={notifyStatus === "sending" || !email}
+                      className="text-sm bg-gray-900 text-white rounded-lg px-4 py-2 hover:bg-gray-700 disabled:opacity-40 transition-colors cursor-pointer"
+                    >
+                      {notifyStatus === "sending" ? "Sending…" : "Notify me"}
+                    </button>
+                  </div>
+                )}
+                {weekNotifyStatus === "sent" ? (
+                  <p className="text-sm text-green-600">✓ Weekly forecast sent to {email}</p>
+                ) : (
                   <button
-                    onClick={sendNotification}
-                    disabled={notifyStatus === "sending" || !email}
-                    className="text-sm bg-gray-900 text-white rounded-lg px-4 py-2 hover:bg-gray-700 disabled:opacity-40 transition-colors cursor-pointer"
+                    onClick={sendWeekNotification}
+                    disabled={weekNotifyStatus === "sending" || !email || week.length === 0}
+                    className="w-full text-sm bg-white text-gray-700 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 disabled:opacity-40 transition-colors cursor-pointer"
                   >
-                    {notifyStatus === "sending" ? "Sending…" : "Notify me"}
+                    {weekNotifyStatus === "sending" ? "Sending…" : "Email me next week's forecast"}
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </>
         )}
