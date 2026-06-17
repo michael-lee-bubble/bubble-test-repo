@@ -107,7 +107,7 @@ export default function Home() {
   };
 
   const sendWeekNotification = async () => {
-    if (!email || week.length === 0) return;
+    if (!emailIsValid || week.length === 0) return;
     setWeekNotifyStatus("sending");
     const res = await fetch("/api/notify", {
       method: "POST",
