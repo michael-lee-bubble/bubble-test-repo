@@ -98,6 +98,17 @@ export default function Home() {
     setNotifyStatus(res.ok ? "sent" : "error");
   };
 
+  const sendWeekNotification = async () => {
+    if (!email || week.length === 0) return;
+    setWeekNotifyStatus("sending");
+    const res = await fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, forecast: week }),
+    });
+    setWeekNotifyStatus(res.ok ? "sent" : "error");
+  };
+
   const wmo = weather ? (WMO_CODES[weather.weather_code] ?? { label: "Unknown", emoji: "🌡️" }) : null;
   const tomorrow = weather
     ? new Date(weather.date + "T12:00:00").toLocaleDateString("en-US", {
